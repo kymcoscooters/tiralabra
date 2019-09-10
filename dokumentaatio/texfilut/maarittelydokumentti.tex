@@ -1,0 +1,23 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[finnish]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\begin{document}
+
+\part*{Määrittelydokumentti}
+
+Tavoitteena olisi luoda ohjelma joka tiivistää tekstitiedostoja ja purkaa jo tiivistettyjä tiedostoja luettavaan  muotoon. Käytetty algoritmi tässä on Huffman, ja toteutukseen kuuluu tietorakenteena binääripuu. Toteutan ohjelman Javalla.
+\\
+\\
+Ohjelma saa siis syötteenä jonkun teksti-tiedoston, tiivistää sen ja palauttaa/tallentaa siitä tiivistetyn version. Ohjlema voisi myös jotenkin ilmaista kuinka paljon tiedostoa on saatu kompressoitua.
+\\
+\\
+Toteutan mahdollisesti ohjelman niin että siitä tulee verkkosivu, johon voi lataa tekstitiedoston, ja prosessoinnin jälkeen ladata koneelle tiivistetyn version, ja toisin päin.
+\\
+\\
+Tavoitteena olisi saada aikavaativuus $\mathcal{O}(n\log{}n)$. Tilavaativuuden suhteen tavoite on että tiivistetty tiedosto olisi noin puolet pienempi kuin alkuperäinen.
+\end{document}
