@@ -1,6 +1,6 @@
 package com.kymcoscooters.textcompressor;
 
-public class Node {
+public class Node implements Comparable<Node> {
     private Character ch;
     private Integer value;
     private Node left;
@@ -45,5 +45,9 @@ public class Node {
 
     public void setRight(Node right) {
         this.right = right;
+    }
+
+    @Override public int compareTo(Node node) {
+        return this.value.compareTo(node.getValue());
     }
 }

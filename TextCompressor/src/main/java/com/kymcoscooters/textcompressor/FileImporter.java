@@ -5,16 +5,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 public class FileImporter {
     private HashMap<Character, Integer> map;
+    private List<String> lines;
+    private HashMap<Character, String> charList;
+    private List<String> encoded;
+    private List<String> decoded;
     
     public FileImporter(){
         map = new HashMap<>();
+        lines = new ArrayList<>();
+        charList = new HashMap<>();
+        encoded = new ArrayList<>();
+        decoded = new ArrayList<>();
     }
     
     /*
@@ -24,7 +33,7 @@ public class FileImporter {
         /*
         File should be in the project root folder
         */
-        String fileName = "temp2.txt";
+        String fileName = "temp.txt";
         
         String line = null;
         
@@ -38,6 +47,7 @@ public class FileImporter {
             */
             while ((line = bufferedReader.readLine()) != null) {
                 System.out.println(line);
+                lines.add(line);
                 /*
                 Read all the characters from the line
                 */
@@ -46,27 +56,25 @@ public class FileImporter {
             
             bufferedReader.close();
             
-            System.out.println("---------------------------------------------------------");
-            
             /*
-            PriorityQueue is a Java library for using a min heap
+            Min heap using own MinHeap class
             */
-            PriorityQueue<Node> queue = new PriorityQueue<Node>();
+            MinHeap heap = new MinHeap();
             
             /*
             Add all the characters to the heap
             */
             for (Map.Entry<Character, Integer> entry : this.map.entrySet()) {
                 Node node = new Node(entry.getKey(), entry.getValue());
-                queue.add(node);
+                heap.push(node);
             }
             
-            while (queue.size() > 1) {
+            while (heap.getSize() > 1) {
                 /*
                 Take the charactes with the smallest values and remove them from the heap
                 */
-                Node node1 = queue.poll();
-                Node node2 = queue.poll();
+                Node node1 = heap.pop();
+                Node node2 = heap.pop();
                 
                 /*
                 Create a new node with a value that is the sum of the two nodes
@@ -81,13 +89,23 @@ public class FileImporter {
                 /*
                 Add it to the heap
                 */
-                queue.add(newNode);
+                heap.push(newNode);
             }
             
             /*
             Print all characters and their respective bytecodes
             */
-            printCharAndCode(queue.peek(), "");
+            printCharAndCode(heap.peek(), "");
+            encode();
+            System.out.println("Printing all encoded lines");
+            for (String s : this.encoded) {
+                System.out.println(s);
+            }
+            System.out.println("Printing all decoded lines");
+            decode(heap.peek());
+            for (String s : this.decoded) {
+                System.out.println(s);
+            }
         } catch (FileNotFoundException e) {
             System.out.println("unable to open file");
         } catch (IOException e) {
@@ -142,7 +160,11 @@ public class FileImporter {
         */
         if (node.getLeft() == null && node.getRight() == null) {
             System.out.println(node.getCh() + " : " + string);
-            
+            /*
+            Putting all characters to a list with their respective binary string representation.
+            To be changed later to some cleaner way to handle this.
+            */
+            charList.put(node.getCh(), string);
             return;
         }
         
@@ -154,5 +176,36 @@ public class FileImporter {
         Traverse the tree to the right, adding a 1 to the code
         */
         printCharAndCode(node.getRight(), string + "1");
+    }
+
+    private void encode() {
+        for (String s : lines) {
+            String string = "";
+            for (char c : s.toCharArray()) {
+                String code = charList.get(c);
+                string += code;
+            }
+            this.encoded.add(string);
+        }
+    }
+
+    private void decode (Node root) {
+        for (String s : encoded) {
+            String string = "";
+            Node node = root;
+            for (char c : s.toCharArray()) {
+                if (c == '0') {
+                    node = node.getLeft();
+                }
+                if (c == '1') {
+                    node = node.getRight();
+                }
+                if (node.getCh() != null) {
+                    string += node.getCh();
+                    node = root;
+                }
+            }
+            this.decoded.add(string);
+        }
     }
 }
