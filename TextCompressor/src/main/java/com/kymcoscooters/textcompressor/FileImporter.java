@@ -1,5 +1,8 @@
 package com.kymcoscooters.textcompressor;
 
+import charMap.CharMap;
+import charMap.CharMapEntry;
+import minHeap.MinHeap;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,23 +10,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FileImporter {
-    private HashMap<Character, Integer> map;
     private List<String> lines;
-    private HashMap<Character, String> charList;
     private List<String> encoded;
     private List<String> decoded;
+    private CharMap charIntMap;
+    private CharMap charStringMap;
     
     public FileImporter(){
-        map = new HashMap<>();
         lines = new ArrayList<>();
-        charList = new HashMap<>();
         encoded = new ArrayList<>();
         decoded = new ArrayList<>();
+        charIntMap = new CharMap();
+        charStringMap = new CharMap();
     }
     
     /*
@@ -35,7 +36,7 @@ public class FileImporter {
         */
         String fileName = "temp.txt";
         
-        String line = null;
+        String line;
         
         try {
             FileReader fileReader = new FileReader(fileName);
@@ -49,7 +50,7 @@ public class FileImporter {
                 System.out.println(line);
                 lines.add(line);
                 /*
-                Read all the characters from the line
+                Read all the characters from the line to check what characters exist and how many
                 */
                 readChars(line);
             }
@@ -64,8 +65,9 @@ public class FileImporter {
             /*
             Add all the characters to the heap
             */
-            for (Map.Entry<Character, Integer> entry : this.map.entrySet()) {
-                Node node = new Node(entry.getKey(), entry.getValue());
+            CharMapEntry[] array = charIntMap.getArr();
+            for (int i = 0; i < charIntMap.getSize(); i++) {
+                Node node = new Node(array[i].getCh(), array[i].getAmount());
                 heap.push(node);
             }
             
@@ -139,15 +141,11 @@ public class FileImporter {
     }
     
     /*
-    Read all the chars on a line, and update the hashmap with the values
+    Read all the chars on a line, and update the map with the values
     */
     private void readChars(String line) {
         for (Character ch : line.toCharArray()) {
-            if (!map.containsKey(ch)) {
-                map.put(ch, 1);
-            } else {
-                map.put(ch, map.get(ch) + 1);
-            }
+            charIntMap.addChar(ch);
         }
     }
     
@@ -164,7 +162,7 @@ public class FileImporter {
             Putting all characters to a list with their respective binary string representation.
             To be changed later to some cleaner way to handle this.
             */
-            charList.put(node.getCh(), string);
+            charStringMap.addChar(node.getCh(), string);
             return;
         }
         
@@ -182,7 +180,7 @@ public class FileImporter {
         for (String s : lines) {
             String string = "";
             for (char c : s.toCharArray()) {
-                String code = charList.get(c);
+                String code = charStringMap.getString(c);
                 string += code;
             }
             this.encoded.add(string);

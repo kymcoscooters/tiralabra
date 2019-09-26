@@ -1,4 +1,6 @@
-package com.kymcoscooters.textcompressor;
+package minHeap;
+
+import com.kymcoscooters.textcompressor.Node;
 
 public class MinHeap {
     private Node[] arr;
