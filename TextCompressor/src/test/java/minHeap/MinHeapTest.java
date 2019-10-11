@@ -1,6 +1,6 @@
 package minHeap;
 
-import com.kymcoscooters.textcompressor.Node;
+import huffman.Node;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

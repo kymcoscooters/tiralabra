@@ -1,4 +1,4 @@
-package com.kymcoscooters.textcompressor;
+package huffman;
 
 public class Node implements Comparable<Node> {
     private Character ch;
