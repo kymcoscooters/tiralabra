@@ -2,15 +2,26 @@ package minHeap;
 
 import huffman.Node;
 
+/**
+ *
+ * @author holmbrob
+ */
 public class MinHeap {
     private Node[] arr;
     private int size;
 
+    /**
+     * Constructor for the min heap
+     */
     public MinHeap() {
         arr = new Node[1000];
         size = 0;
     }
 
+    /**
+     * Method for pushing a node to the heap
+     * @param node, the node that is being pushed
+     */
     public void push(Node node) {
         arr[size] = node;
         int current = size;
@@ -21,6 +32,10 @@ public class MinHeap {
         }
     }
 
+    /**
+     * Method for taking the smallest value out of the heap
+     * @return, the node with the smallest value
+     */
     public Node pop() {
         Node popped = arr[0];
         arr[0] = arr[size-1];
@@ -29,6 +44,10 @@ public class MinHeap {
         return popped;
     }
 
+    /**
+     * Method for checking the smallest value of the heap without removing it
+     * @return, the node with the smallest value
+     */
     public Node peek() {
         return arr[0];
     }
@@ -69,6 +88,10 @@ public class MinHeap {
         }
     }
 
+    /**
+     * Method for getting the amount of nodes in the heap
+     * @return the amount
+     */
     public int getSize() {
         return size;
     }

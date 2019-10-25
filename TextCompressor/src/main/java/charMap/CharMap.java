@@ -1,18 +1,27 @@
 package charMap;
 
+/**
+ *
+ * @author holmbrob
+ */
 public class CharMap {
 
     private CharMapEntry[] arr;
     private int size;
 
+    /**
+     * Constructor for setting up the charmap
+     */
     public CharMap() {
         this.arr = new CharMapEntry[200];
         this.size = 0;
     }
 
-    /*
-    Method returns true if map contains the character. Used by the tests.
-    */
+    /**
+     * Method for checking if the map contains a character already.
+     * @param ch, the character to be checked
+     * @return, a boolean value, true if it already exists, false if it doesn't
+     */
     public boolean hasChar(Character ch) {
         for (int i = 0; i < this.size; i++) {
             if (this.arr[i].getCh().equals(ch)) {
@@ -22,9 +31,6 @@ public class CharMap {
         return false;
     }
 
-    /*
-    Method returns the CharMapEntry if it exists. Used by the other methods.
-    */
     private CharMapEntry getEntry(Character ch) {
         for (int i = 0; i < this.size; i++) {
             if (this.arr[i].getCh().equals(ch)) {
@@ -34,9 +40,11 @@ public class CharMap {
         return null;
     }
 
-    /*
-    Returns the amount of times the characters exists. Used by the tests.
-    */
+    /**
+     * Method for getting the amount of times a character shows up in the text
+     * @param ch, the character to be searched for
+     * @return, the amount
+     */
     public int getAmount(Character ch) {
         CharMapEntry entry = getEntry(ch);
 
@@ -47,9 +55,11 @@ public class CharMap {
         return 0;
     }
 
-    /*
-    Returns the string representation of a character.
-    */
+    /**
+     * Method for getting the binary string representation of a character
+     * @param ch, the character to be searched for
+     * @return its binary string representation
+     */
     public String getString(Character ch) {
         CharMapEntry entry = getEntry(ch);
 
@@ -60,9 +70,11 @@ public class CharMap {
         return "";
     }
 
-    /*
-    Sets the encoding string of a character
-    */
+    /**
+     * method for setting the binary string representation of a character
+     * @param ch, the character
+     * @param string, its intended binary string representation
+     */
     public void setString(Character ch, String string) {
         CharMapEntry entry = getEntry(ch);
 
@@ -71,9 +83,10 @@ public class CharMap {
         }
     }
 
-    /*
-    Adds one to the amount of times the character is used. Used by the tests.
-    */
+    /**
+     * Method for adding one to the amount of times a character has shown up
+     * @param ch, the character to which one should be added
+     */
     public void addOne(Character ch) {
         CharMapEntry entry = getEntry(ch);
 
@@ -82,9 +95,10 @@ public class CharMap {
         }
     }
 
-    /*
-    Adds the character to the map
-    */
+    /**
+     * Method for adding a new character to the map
+     * @param ch, the character to be added
+     */
     public void addChar(Character ch) {
         CharMapEntry entry = getEntry(ch);
 
@@ -96,9 +110,11 @@ public class CharMap {
         }
     }
 
-    /*
-    Adds the character to the map, with the encoding string
-    */
+    /**
+     * Method for adding a new character to the map, along with its binary string representation
+     * @param ch, the character to be added
+     * @param string, its corresponding binary string representation
+     */
     public void addChar(Character ch, String string) {
         CharMapEntry entry = getEntry(ch);
 
@@ -108,17 +124,28 @@ public class CharMap {
         }
     }
 
-    /*
-    Returns the map
-    */
+    /**
+     * Method for getting the map array
+     * @return an array of CharMapEntry objects
+     */
     public CharMapEntry[] getArr() {
         return arr;
     }
 
-    /*
-    Returns the amount of characters
-    */
+    /**
+     * Method for getting the size of the map
+     * @return, the size of the map
+     */
     public int getSize() {
         return size;
+    }
+
+    /**
+     * Method for adding a CharMapEntry object
+     * @param entry, the entry object to be added
+     */
+    public void addEntry(CharMapEntry entry) {
+        arr[this.size] = entry;
+        this.size++;
     }
 }

@@ -2,54 +2,67 @@ package huffman;
 
 import charMap.CharMap;
 import charMap.CharMapEntry;
+import main.FileIO;
 import java.util.ArrayList;
 import java.util.List;
 import minHeap.MinHeap;
 
+/**
+ *
+ * @author holmbrob
+ */
 public class Huffman {
     
-    private List<String> lines;
-    private List<String> encoded;
-    private List<String> decoded;
-    private CharMap charIntMap;
-    private CharMap charStringMap;
-    private MinHeap heap;
+    private FileIO fileIO;
     
-    public Huffman() {
-        this.lines = new ArrayList<>();
-        this.encoded = new ArrayList<>();
-        this.decoded = new ArrayList<>();
-        this.charIntMap = new CharMap();
-        this.charStringMap = new CharMap();
-        this.heap = new MinHeap();
+    /**
+     * Constructor for the class
+     * @param fileIO, FileIO object, used for reading from files
+     */
+    public Huffman(FileIO fileIO) {
+        this.fileIO = fileIO;
     }
-    
+
+    /**
+     * Method for building the huffman tree
+     * @param lines, the strings that should be compressed
+     */
     public void build (List<String> lines) {
-        this.lines = lines;
         
+        CharMap charIntMap = readChars(lines);
+        
+        for (CharMapEntry e : charIntMap.getArr()) {
+            try {
+                e.getCh();
+            }
+            catch (NullPointerException ex) {
+                break;
+            }
+            System.out.println("char: " + e.getCh() + " amount: " + e.getAmount());
+        }
+
+        MinHeap heap = buildHeap(charIntMap);
+
+        CharMap charStringMap = printCharAndCode(heap.peek(), "", new CharMap());
+
+        encode(lines, charIntMap, charStringMap);
+    }
+    
+    private CharMap readChars(List<String> lines) {
+        CharMap map = new CharMap();
         for (String line : lines) {
-            readChars(line);
-            System.out.println(line);
+            for (Character ch : line.toCharArray()) {
+                map.addChar(ch);
+            }
         }
-        
-        buildHeap();
-        printCharAndCode(heap.peek(), "");
-        encode();
-        decode(heap.peek());
-        for (String s : this.decoded) {
-            System.out.println(s);
-        }
+
+        return map;
     }
     
-    private void readChars(String line) {
-        for (Character ch : line.toCharArray()) {
-            charIntMap.addChar(ch);
-        }
-    }
-    
-    private void buildHeap() {
-        CharMapEntry[] array = charIntMap.getArr();
-        for (int i = 0; i < charIntMap.getSize(); i++) {
+    private MinHeap buildHeap(CharMap map) {
+        CharMapEntry[] array = map.getArr();
+        MinHeap heap = new MinHeap();
+        for (int i = 0; i < map.getSize(); i++) {
             Node node = new Node(array[i].getCh(), array[i].getAmount());
             heap.push(node);
         }
@@ -76,45 +89,60 @@ public class Huffman {
             */
             heap.push(newNode);
         }
+        return heap;
     }
     
-    private void printCharAndCode(Node node, String string) {
+    private CharMap printCharAndCode(Node node, String string, CharMap map) {
         /*
         End of recursion, print the character and the whole code
         */
         if (node.getLeft() == null && node.getRight() == null) {
             System.out.println(node.getCh() + " : " + string);
             /*
-            Putting all characters to a list with their respective binary string representation.
-            To be changed later to some cleaner way to handle this.
+            Putting all characters to a map with their respective binary string representation.
             */
-            charStringMap.addChar(node.getCh(), string);
-            return;
+            map.addChar(node.getCh(), string);
+            return map;
         }
         
         /*
         Traverse the tree to the left, adding a 0 to the code
         */
-        printCharAndCode(node.getLeft(), string + "0");
+        printCharAndCode(node.getLeft(), string + "0", map);
         /*
         Traverse the tree to the right, adding a 1 to the code
         */
-        printCharAndCode(node.getRight(), string + "1");
+        printCharAndCode(node.getRight(), string + "1", map);
+
+        return map;
     }
     
-    private void encode() {
+    private void encode(List<String> lines, CharMap charIntMap, CharMap charStringMap) {
+        List<String> encoded = new ArrayList<>();
         for (String s : lines) {
             String string = "";
             for (char c : s.toCharArray()) {
                 String code = charStringMap.getString(c);
                 string += code;
             }
-            this.encoded.add(string);
+            encoded.add(string);
         }
+        this.fileIO.writeCompressed(encoded, charIntMap);
     }
     
-    private void decode (Node root) {
-        for (String s : encoded) {
+    /**
+     * Method for decoding compressed text
+     * @param headerFileName, filename of the header file
+     * @param contentFileName, filename of the content file
+     */
+    public void decode(String headerFileName, String contentFileName) {
+        String header = this.fileIO.readText(headerFileName).get(0);
+        List<String>  content = this.fileIO.readByteStream(contentFileName);
+        List<String> decoded = new ArrayList<>();
+        CharMap map = buildMap(header);
+        MinHeap heap = buildHeap(map);
+        Node root = heap.peek();
+        for (String s : content) {
             String string = "";
             Node node = root;
             for (char c : s.toCharArray()) {
@@ -129,7 +157,34 @@ public class Huffman {
                     node = root;
                 }
             }
-            this.decoded.add(string);
+            decoded.add(string);
         }
+        for (String s : decoded) {
+            System.out.println(s);
+        }
+    }
+
+    private CharMap buildMap(String s) {
+        CharMap map = new CharMap();
+        String help = "";
+        CharMapEntry entry = new CharMapEntry();
+        for (char c : s.toCharArray()) {
+            if (Character.isDigit(c)) {
+                help += Character.toString(c);
+            } else {
+                if (entry.getCh() == null) {
+                    entry.setCh(c);
+                } else {
+                    entry.setAmount(Integer.parseInt(help));
+                    help = "";
+                    map.addEntry(entry);
+                    entry = new CharMapEntry();
+                    entry.setCh(c);
+                }
+            }
+        }
+        entry.setAmount(Integer.parseInt(help));
+        map.addEntry(entry);
+        return map;
     }
 }
