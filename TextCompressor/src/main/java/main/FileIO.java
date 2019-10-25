@@ -85,8 +85,6 @@ public class FileIO {
                 i = inputStream.read();
             }
 
-            System.out.println("bytestreamhelp: " + help);
-
             List<String> list = new ArrayList<>();
             list.add(help);
             return list;
